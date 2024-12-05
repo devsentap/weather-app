@@ -4,9 +4,10 @@
       <q-page>        
         <div class="text-h4">Edit Profile</div>
         <div class="text-center">
-          <q-avatar size="200px">
+          <!-- <q-avatar size="200px">
             <img src="https://cdn.quasar.dev/img/avatar.png">
-          </q-avatar>
+          </q-avatar> -->
+          <q-icon name="add_a_photo" size="64px"  />
         </div>        
         <div class="text-center">Jane Doe</div>
         <div class="row">
@@ -18,8 +19,8 @@
           </div>
         </div>
         <q-input v-model="txtFullName" label="Full Name" stack-label :rules="[val => !!val || 'Field is required']" />
-        <q-input v-model="txtEmail" label="Email" stack-label />        
-        <vue3-q-tel-input v-model="txtPhoneNum" label="Phone Number" stack-label @update:model-value="logName" />
+        <q-input v-model="txtEmail" label="Email" stack-label :rules="[(val) => validateEmail(val) || 'Must be a valid email.']"/>        
+        <vue3-q-tel-input v-model="txtPhoneNum" type="number" label="Phone Number" stack-label @update:model-value="logName"  />
 
         <div class="text-center">
           <q-btn color="white" text-color="black" label="Edit" />
@@ -50,9 +51,13 @@
         console.log('line 50 logName');
       }
 
+      function validateEmail(email: string): boolean {
+        return /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(email);
+      }
+
       // expose to template and other options API hooks
       return {
-        txtFullName, txtEmail, txtPhoneNum, logName
+        txtFullName, txtEmail, txtPhoneNum, logName, validateEmail
       };      
     },
 
