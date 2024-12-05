@@ -4,7 +4,7 @@ import './style.css'
 import App from './App.vue'
 
 // import { Quasar } from 'quasar'
-import { Quasar, Loading, Dialog } from 'quasar'
+import { Quasar } from 'quasar'
 // Import icon libraries
 import '@quasar/extras/material-icons/material-icons.css'
 // Import Quasar css

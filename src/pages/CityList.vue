@@ -1,29 +1,60 @@
 <template>
-  <q-layout>
+  <q-layout class="q-pa-lg" style="width: 750px;margin: auto;">
     <q-page-container>
-      <h4>Manage Location</h4>
-      <q-input rounded outlined v-model="text" label="Enter location">
-        <template v-slot:prepend>
-          <q-icon name="search" />
-        </template>
-        <template v-slot:append>
-          <q-icon name="close" @click="text = ''" class="cursor-pointer" />
-        </template>        
-      </q-input>
+      <q-page>
+        <div class="row">
+          <div class="col">
+            <div class="text-h4">Manage Location</div>
+          </div>
+          <div class="col">
+            <div class="text-right q-pa-sm">
+              <q-icon class="cursor-pointer" name="manage_accounts" size="32px" @click="this.$router.push('/editprofile');" />
+            </div>
+          </div>
+        </div>
+        <q-input class="q-my-sm" rounded outlined v-model="text" label="Enter location">
+          <template v-slot:prepend>
+            <q-icon name="search" />
+          </template>
+          <template v-slot:append>
+            <q-icon name="close" @click="text = ''" class="cursor-pointer" />
+          </template>        
+        </q-input>
 
-      <q-card
-        class="my-card text-white"
-        style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)"
-      >
-        <q-card-section>
-          <div class="text-h6">Our Changing Planet</div>
-          <div class="text-subtitle2">by John Doe</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          {{ lorem }}
-        </q-card-section>
-      </q-card>
+        <q-card
+          class="q-my-md text-white"
+          style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%); border-radius: 20px;"
+        >
+          <q-card-section>
+            <div class="row">
+              <div class="col">
+                <div class="text-h6">My Location</div>
+                <!-- <br> -->
+                <div class="text-subtitle2">Bangsar South</div>
+              </div>
+              <div class="col">
+                <div class="text-h1 text-right">24 d</div>
+              </div>
+            </div>
+            <br />
+            <div class="row">
+              <div class="col">
+                <div class="text-subtitle2">Moderate Rain</div>
+              </div>
+              <div class="col">
+                <div class="text-right">H: 29 deg L: 30 deg</div>                
+              </div>              
+            </div>
+            
+            
+            
+          </q-card-section>
+  
+          <q-card-section class="q-pt-none">
+            {{ lorem }}
+          </q-card-section>
+        </q-card>
+      </q-page>
     </q-page-container>
   </q-layout>
 </template>
