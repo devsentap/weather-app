@@ -2,8 +2,17 @@
   <q-layout class="q-pa-lg" style="width: 750px;margin: auto;">
     <q-page-container>
       <q-page>
-        <h4>Manage Location</h4>
-        <q-input rounded outlined v-model="text" label="Enter location">
+        <div class="row">
+          <div class="col">
+            <div class="text-h4">Manage Location</div>
+          </div>
+          <div class="col">
+            <div class="text-right q-pa-sm">
+              <q-icon class="cursor-pointer" name="manage_accounts" size="32px" @click="this.$router.push('/editprofile');" />
+            </div>
+          </div>
+        </div>
+        <q-input class="q-my-sm" rounded outlined v-model="text" label="Enter location">
           <template v-slot:prepend>
             <q-icon name="search" />
           </template>
