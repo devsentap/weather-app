@@ -13,9 +13,11 @@
     "@quasar/vite-plugin": "^1.8.1",
     "axios": "^1.7.8",
     "dayjs": "^1.11.13",
+    "pinia": "^2.3.0",
     "quasar": "^2.17.4",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "vue3-q-tel-input": "^2.0.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",

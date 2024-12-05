@@ -3,12 +3,17 @@ import { createRouter, createWebHistory } from 'vue-router'
 import './style.css'
 import App from './App.vue'
 
-// import { Quasar } from 'quasar'
+import { createPinia } from 'pinia'
+const pinia = createPinia()
+
 import { Quasar } from 'quasar'
 // Import icon libraries
 import '@quasar/extras/material-icons/material-icons.css'
 // Import Quasar css
 import 'quasar/dist/quasar.css'
+
+import Vue3QTelInput from 'vue3-q-tel-input'
+import 'vue3-q-tel-input/dist/style.css'
 
 import CityList      from './pages/CityList.vue'
 import WeatherDetail from './pages/WeatherDetail.vue'
@@ -28,5 +33,7 @@ const router = createRouter({
 
 createApp(App)
   .use(router)
-  .use(Quasar, { plugins: { } })
-  .mount('#app')
+  .use(Quasar, { plugins: { } })  
+  .use(Vue3QTelInput)  
+  .use(pinia)
+  .mount('#app');
