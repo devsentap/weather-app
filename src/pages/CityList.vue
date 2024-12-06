@@ -31,32 +31,28 @@
 
         <q-card
           v-show="!showCities"
+          v-for="res in locations" :key="res.name"
           class="q-my-md text-white"
           style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%); border-radius: 20px;"
         >
           <q-card-section>
-            <div class="row">
+            <div class="row flex-center">
               <div class="col">
-                <div class="text-h6">My Location</div>
-                <!-- <br> -->
-                <div class="text-subtitle2">Bangsar South</div>
+                <div class="text-h4">{{ res.name }}</div>
               </div>
               <div class="col">
-                <div class="text-h1 text-right">24°</div>
+                <div class="text-h1 text-right">{{ res.temp_F }}</div>
               </div>
             </div>
             <br />
-            <div class="row">
+            <div class="row flex-center">
               <div class="col">
-                <div class="text-subtitle2">Moderate Rain</div>
+                <div class="text-h6">{{ res.description }}</div>
               </div>
               <div class="col">
-                <div class="text-right">H: 29° L: 30°</div>                
+                <div class="text-right">{{ res.temp_min_max_F }}</div>                
               </div>              
             </div>
-          </q-card-section>  
-          <q-card-section class="q-pt-none">
-            TEXT HEREEEEEEEEEEEEEE
           </q-card-section>
         </q-card>        
       </q-page>
@@ -68,6 +64,8 @@
 import { useQuasar } from 'quasar';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { useLocationsStore } from '../stores/Locations';
 
 import { onMounted, ref } from 'vue';
 import MAPPING_COUNTRYCODE_COUNTRYNAME from '../assets/ISO3166.json';
@@ -78,29 +76,23 @@ export default {
     var location        = ref('');
     var showCities      = ref(false);
     var locationResults = ref([]);
-    // var items = [{txtSelect: '1 2 3'},{txtSelect: '4 5 6'}];
 
-    onMounted(async() => { 
-      // console.log('mounted CityList', MAPPING_COUNTRYCODE_COUNTRYNAME);      
-    });
+    var locationsStore = useLocationsStore();
+    var locations = storeToRefs(locationsStore).locations;    
 
-    function toggleShowCities(evt) {
-      // console.log('toggleShowCities', evt.relatedTarget?.role);
+    function toggleShowCities(evt) {      
       if (evt.relatedTarget?.role) { return; } // if got role, meaning we're clicking on location search result, so stop processing
       showCities.value = !showCities.value;
       locationResults.value.splice(0);
       location.value = '';
     }
 
-    function viewWeatherDetails(obj) {
-      console.log('viewWeatherDetails', obj);
+    function viewWeatherDetails(obj) {      
       var { lat, lon, name } = obj;
-      router.push({ path: '/weatherdetail', query: { lat, lon, name } });
-      // $router.push('/weatherdetail');
+      router.push({ path: '/weatherdetail', query: { lat, lon, name } });      
     }
 
-    async function searchLocation(q) {
-      // console.log('searchLocation', location);
+    async function searchLocation(q) {      
       var axios_url = `http://api.openweathermap.org/geo/1.0/direct?q=${q}&limit=5&appid=6383f466a429e26399e6064e623ddaa2`;
       var res;
       try {
@@ -126,7 +118,7 @@ export default {
     }
 
     return {
-      location, showCities, locationResults,
+      location, showCities, locationResults, locations,
       searchLocation, toggleShowCities, viewWeatherDetails
     };
   }
