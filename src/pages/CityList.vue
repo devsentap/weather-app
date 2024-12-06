@@ -93,7 +93,7 @@ export default {
     }
 
     async function searchLocation(q) {      
-      var axios_url = `http://api.openweathermap.org/geo/1.0/direct?q=${q}&limit=5&appid=6383f466a429e26399e6064e623ddaa2`;
+      var axios_url = `https://api.openweathermap.org/geo/1.0/direct?q=${q}&limit=5&appid=6383f466a429e26399e6064e623ddaa2`;
       var res;
       try {
         res = await axios.get(axios_url);
