@@ -1,10 +1,138 @@
 <template>
-  <h1>Weather Detail</h1>
+  <q-layout class="q-pa-lg" style="width: 750px;margin: auto;">
+    <q-page-container>
+      <q-page>        
+        <div class="text-h4 text-center">{{ locationSelected }}</div>
+        <br><br>
+        <div class="text-center">{{ dateToday }}</div>
+        <div class="text-center q-pa-md"><q-icon name="thunderstorm" size="128px" /></div>
+        <div class="text-center text-h5">{{ currTemp }}</div>
+        <div class="text-center text-h5">{{ currWeather }}</div>
+        <br>
+        <div>3 Hourly Forecast</div>
+        <div class="row">          
+          <div class="col q-pa-md" v-for="res in resMapped_hourly_entries" :key="res.index">
+            <q-card>
+              <q-card-section>
+                <div class="text-center q-pa-md"><q-icon name="thunderstorm" size="48px" /></div>                
+                <div class="text-center">{{ res.temp_F }}</div>
+                <div class="text-center">{{ res.dt_txt_F2 }}</div>
+                <div class="text-center">{{ res.dt_txt_F3 }}</div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
+        <br>
+        <div>5 Day Forecast</div>
+        <div class="col q-pa-md">          
+          <q-card class="q-my-md" v-for="res in resMapped_daily_entries" :key="res.index">
+            <q-card-section>
+              <div class="row flex-center">
+                <div class="col q-px-md"><q-icon name="thunderstorm" size="48px" /></div>
+                <div class="col-8 text-h6">{{ res.dt_txt_F3 }}<br>{{ res.weather }}</div>
+                <div class="col text-right text-h6 q-px-md">{{ res.temp_F }}C</div>
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
-<script lang="ts">
-export default {
+<script>
+import axios from 'axios';
+import dayjs from 'dayjs';
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { useQuasar } from 'quasar';
 
+export default {
+  setup() {
+    const $q = useQuasar();
+    const route = useRoute();
+
+    var locationSelected = ref('');
+    var dateToday = ref(dayjs().format('dddd, DD MMMM YYYY'));
+    var currTemp  = ref('');
+    var currWeather = ref('');
+    var resMapped_hourly_entries = ref([]);
+    var resMapped_daily_entries  = ref([]);    
+    var resDay1 = ref({});
+
+    onMounted(async () => {
+      var { lat, lon, name } = route.query;
+      locationSelected.value = name;
+      await getWeather(lat, lon);
+      await getForecast(lat, lon);
+    });
+
+    async function getWeather(lat, lon) {
+      var axios_url = `https://api.openweathermap.org/data/2.5/weather?appid=6383f466a429e26399e6064e623ddaa2&units=metric&lat=${lat}&lon=${lon}`;
+      var res;
+      try {
+        res = await axios.get(axios_url);
+      } catch (err) {
+        console.error('ERROR getWeather()', err);
+        $q.dialog({
+          title: 'ERROR',
+          message: 'Something wrong with getWeather.<br>Please try again after some time.',
+          html: true,
+          position: 'bottom'
+        });
+        return;
+      }
+      // console.log('getWeather res', res.data, res.data.main.temp, res.data.weather[0].description);
+      currTemp.value    = res.data.main.temp + '°C';
+      currWeather.value = res.data.weather[0].description;
+    }
+
+    async function getForecast(lat, lon) {
+      var axios_url = `https://api.openweathermap.org/data/2.5/forecast?appid=6383f466a429e26399e6064e623ddaa2&units=metric&lat=${lat}&lon=${lon}`;
+      var res;
+      try {
+        res = await axios.get(axios_url);
+      } catch (err) {
+        console.error('ERROR getForecast()', err);
+        $q.dialog({
+          title: 'ERROR',
+          message: 'Something wrong with getForecast.<br>Please try again after some time.',
+          html: true,
+          position: 'bottom'
+        });
+        return;
+      }
+      var resMapped = res.data.list.map((obj, index) => {        
+        return { 
+          index,
+          dt: obj.dt,
+          dt_txt: obj.dt_txt,
+          dt_txt_F: dayjs(obj.dt_txt).format('dddd, DD MMMM YYYY h:mm A'),
+          dt_txt_F2: dayjs(obj.dt_txt).format('h:mm A'),
+          dt_txt_F3: dayjs(obj.dt_txt).format('dddd, DD MMM'),          
+          temp: obj.main.temp,
+          temp_F: Math.round(obj.main.temp) + '°',
+          weather: obj.weather[0].description
+        };
+      });
+      console.log('resMapped', resMapped);
+      resMapped_hourly_entries.value = resMapped.slice(0,4);
+
+      // we choose to show the first 3-hour entry forecast for that day
+      // multiples of 8, 24 / 3 = 8
+      resMapped_daily_entries.value.push(resMapped[0]);
+      resMapped_daily_entries.value.push(resMapped[8]);
+      resMapped_daily_entries.value.push(resMapped[16]);
+      resMapped_daily_entries.value.push(resMapped[24]);
+      resMapped_daily_entries.value.push(resMapped[32]);
+    }
+
+    return {
+      locationSelected, dateToday, currTemp, currWeather, resMapped_hourly_entries, resMapped_daily_entries,
+      resDay1,
+      getWeather, getForecast
+    };
+  }
 }
 </script>
 

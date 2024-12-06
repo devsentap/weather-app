@@ -15,7 +15,7 @@
         <q-input 
           class="q-my-sm" rounded outlined 
           v-model="location" label="Enter location" debounce="500" 
-          @update:model-value="searchLocation" @focus="showCities = !showCities" @blur="showCities = !showCities">
+          @update:model-value="searchLocation" @focus="toggleShowCities" @blur="toggleShowCities">
           <template v-slot:prepend>
             <q-icon name="search" />
           </template>
@@ -23,9 +23,9 @@
             <q-icon name="close" @click="location = ''" class="cursor-pointer" />
           </template>        
         </q-input>
-        <q-list>
-          <q-item clickable v-ripple v-for="item in items">
-            <q-item-section>{{ item.message }}</q-item-section>
+        <q-list separator>
+          <q-item clickable v-ripple v-for="location in locationResults" :key="location.index" @click="viewWeatherDetails(location)">
+            <q-item-section>{{ location.txtSelect }}</q-item-section>
           </q-item>
         </q-list>
 
@@ -58,47 +58,78 @@
           <q-card-section class="q-pt-none">
             TEXT HEREEEEEEEEEEEEEE
           </q-card-section>
-        </q-card>
+        </q-card>        
       </q-page>
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
+import { useQuasar } from 'quasar';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
+
 import { onMounted, ref } from 'vue';
 import MAPPING_COUNTRYCODE_COUNTRYNAME from '../assets/ISO3166.json';
 export default {
   setup() {
-    const location = ref('');
-    const showCities = ref(false);
-    const items = [{message: '1'},{message: '2'}];
+    const $q = useQuasar();
+    const router = useRouter();
+    var location        = ref('');
+    var showCities      = ref(false);
+    var locationResults = ref([]);
+    // var items = [{txtSelect: '1 2 3'},{txtSelect: '4 5 6'}];
 
     onMounted(async() => { 
       // console.log('mounted CityList', MAPPING_COUNTRYCODE_COUNTRYNAME);      
     });
 
-    function OnFocusInput() {
-      console.log('OnFocusInput');
+    function toggleShowCities(evt) {
+      // console.log('toggleShowCities', evt.relatedTarget?.role);
+      if (evt.relatedTarget?.role) { return; } // if got role, meaning we're clicking on location search result, so stop processing
+      showCities.value = !showCities.value;
+      locationResults.value.splice(0);
+      location.value = '';
     }
 
-    async function searchLocation(location) {
-      console.log('searchLocation', location);
-      var axios_url = `http://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=5&appid=6383f466a429e26399e6064e623ddaa2`;
-      var res = await axios.get(axios_url);
-      var data = res.data.map((obj) => {
+    function viewWeatherDetails(obj) {
+      console.log('viewWeatherDetails', obj);
+      var { lat, lon, name } = obj;
+      router.push({ path: '/weatherdetail', query: { lat, lon, name } });
+      // $router.push('/weatherdetail');
+    }
+
+    async function searchLocation(q) {
+      // console.log('searchLocation', location);
+      var axios_url = `http://api.openweathermap.org/geo/1.0/direct?q=${q}&limit=5&appid=6383f466a429e26399e6064e623ddaa2`;
+      var res;
+      try {
+        res = await axios.get(axios_url);
+      } catch (err) {
+        console.error('ERROR searchLocation()', err, $q);
+        $q.dialog({
+          title: 'ERROR',
+          message: 'Something wrong with search location.<br>Please try again after some time.',
+          html: true,
+          position: 'bottom'
+        });
+        return;
+      }
+      var data = res.data.map((obj, index) => {
+        obj.index       = index;
         obj.countryName = MAPPING_COUNTRYCODE_COUNTRYNAME[obj.country];
         obj.txtSelect   = `${obj.name}, ${obj.state} ${obj.countryName}`;
-        var { name, state, country, countryName, txtSelect } = obj;
-        return { name, state, country, countryName, txtSelect };
+        return obj;
       });
-      console.log('data', data);
+      locationResults.value.splice(0);
+      locationResults.value = locationResults.value.concat(data);      
     }
 
     return {
-      location, searchLocation, OnFocusInput, showCities, items
+      location, showCities, locationResults,
+      searchLocation, toggleShowCities, viewWeatherDetails
     };
-  },  
+  }
 }
 </script>
 

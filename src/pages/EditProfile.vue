@@ -31,7 +31,7 @@
   
 </template>
 <script lang="ts">
-  import { ref, onMounted, onUpdated } from 'vue'
+  import { onMounted, onUpdated } from 'vue'
   import { storeToRefs } from 'pinia';
   import { useProfileStore } from '../stores/Profile'; 
   

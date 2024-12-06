@@ -6,7 +6,7 @@ import App from './App.vue'
 import { createPinia } from 'pinia'
 const pinia = createPinia()
 
-import { Quasar } from 'quasar'
+import { Quasar, Dialog } from 'quasar'
 // Import icon libraries
 import '@quasar/extras/material-icons/material-icons.css'
 // Import Quasar css
@@ -33,7 +33,7 @@ const router = createRouter({
 
 createApp(App)
   .use(router)
-  .use(Quasar, { plugins: { } })  
+  .use(Quasar, { plugins: { Dialog } })  
   .use(Vue3QTelInput)  
   .use(pinia)
   .mount('#app');
